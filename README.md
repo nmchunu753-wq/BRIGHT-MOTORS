@@ -47,10 +47,11 @@ The data processing phase was handled within **Databricks** using SQL to transfo
 ## Repository Structure
 *   `README.md`: This project overview.
 *   `project description: ` https://github.com/nmchunu753-wq/BRIGHT-MOTORS/blob/main/BrightMotors_CarSales_CaseStudy.pdf
-*   `car_sales_queries.sql`: The SQL script containing transformations performed in Databricks.
-*   link: 
-*   `car_sales_processed.xlsx`: The final processed dataset used for visualization.
-*   `BrightMotors_Presentation.pdf`: The final slide deck presented to the Head of Sales.
-*   `Architecture_Diagram.png`: The Miro flowchart outlining the project's data architecture.
+*   `car_sales_queries.sql: ` https://github.com/nmchunu753-wq/BRIGHT-MOTORS/blob/main/BRIGHTMOTORS.sql
+*    `Miro Flowchart`: The image is unclear, for clear viewing open link: https://miro.com/app/board/uXjVHaRURUE=/?moveToWidget=3458764670010099810&cot=14
+*     `Project Gantt Chartt: ` 
+*    `Excel Analysis File - Pivots & Graphs:` 
+*   `BrightMotors_Presentation.pdf`
+*   `Dashboards`:
 
 ***
