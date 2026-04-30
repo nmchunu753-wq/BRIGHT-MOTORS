@@ -14,7 +14,7 @@ The source material provided by **BrightLearn** consists of the **"Bright Car Sa
 *   **Total Revenue:** The analyzed data accounts for approximately **$7.6 billion** in revenue.
 
 ## Tools Used
-*   **Project Planning:** Miro (Architecture and Data Flow diagrams).
+*   **Project Planning:** Miro link https://miro.com/app/board/uXjVHaRURUE=/?moveToWidget=3458764670010099810&cot=14
 *   **Data Processing:** **Databricks (SQL)** for ETL, cleaning, and transformation.
 *   **Visualization:** Power BI and Microsoft Excel.
 *   **Presentation:** Microsoft PowerPoint.
