@@ -11,15 +11,12 @@ FROM `workspace`.`cars`.`CARSALES`;
 SELECT count(*) 
 FROM `workspace`.`cars`.`CARSALES`;
 
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --- Query 3: The total revenue. NOTE: total revenue = sales * selling price
 ---7 606 012 287 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-SELECT sum(sellingprice) 
+SELECT sum(sellingprice) AS totl_revenue
 FROM `workspace`.`cars`.`CARSALES`;
-
-
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 ---Query 4: Start and end year of car manufature
@@ -29,8 +26,6 @@ SELECT MIN(year) AS Start_Year_Of_Manufature,
        MAX(year) AS Last_Year_Of_Manufature
 FROM `workspace`.`cars`.`CARSALES`;
 
- 
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 ---Query 5: Extracting year, month and date from sale date.
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -39,9 +34,6 @@ SELECT saledate,
        SUBSTR(saledate, 5, 3) AS Sale_Month,
        SUBSTR(saledate, 9, 2) AS Sale_Day
 FROM `workspace`.`cars`.`CARSALES`;
-
-
-
 ---------------------------------------------------------------------------------------------------------------
 --- Query 6:  Finding the first and last year of selling
 ---2014 to 2015
@@ -50,8 +42,6 @@ SELECT
       MIN(SUBSTR(saledate, 12, 4)) Start_Sale_Year,
       MAX(SUBSTR(saledate, 12, 4)) Last_Sale_Year
 FROM `workspace`.`cars`.`CARSALES`;
-
- 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 ---Query 7: Which car makes and models generate the most revenue : TOP 10
@@ -63,9 +53,6 @@ FROM `workspace`.`cars`.`CARSALES`
 GROUP BY make, model
 ORDER BY SUM(sellingprice) DESC
 LIMIT 10;
-
- 
-
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 --- Query 8: The relationship between price, mileage, and year of manufacture 
 ---Note mileage is odometer.
@@ -82,7 +69,7 @@ GROUP BY year
 ORDER BY year DESC
 LIMIT 20;
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
---
+--margin tiers
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 SELECT 
     make, 
@@ -194,8 +181,6 @@ GROUP BY color
 ORDER BY total_sales DESC
 LIMIT 10;
 
-
-
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 -------Query 15: Most preferred car interier types
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -246,43 +231,11 @@ ORDER BY total_sales DESC;
 -------Query 17: FINAL BIG QUERY
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 SELECT 
-    -- Time dimensions
+    -- Time dimensions from saledate
     CAST(SUBSTR(saledate, 12, 4) AS INT) AS Sale_Year,
-    
-    CASE SUBSTR(saledate, 5, 3)
-        WHEN 'Jan' THEN 'January'
-        WHEN 'Feb' THEN 'February'
-        WHEN 'Mar' THEN 'March'
-        WHEN 'Apr' THEN 'April'
-        WHEN 'May' THEN 'May'
-        WHEN 'Jun' THEN 'June'
-        WHEN 'Jul' THEN 'July'
-        WHEN 'Aug' THEN 'August'
-        WHEN 'Sep' THEN 'September'
-        WHEN 'Oct' THEN 'October'
-        WHEN 'Nov' THEN 'November'
-        WHEN 'Dec' THEN 'December'
-        ELSE 'Unknown'
-    END AS Sale_Month,
+    SUBSTR(saledate, 5, 3) AS Sale_Month,
 
-    -- Month number for ordering
-    CASE SUBSTR(saledate, 5, 3)
-        WHEN 'Jan' THEN 1
-        WHEN 'Feb' THEN 2
-        WHEN 'Mar' THEN 3
-        WHEN 'Apr' THEN 4
-        WHEN 'May' THEN 5
-        WHEN 'Jun' THEN 6
-        WHEN 'Jul' THEN 7
-        WHEN 'Aug' THEN 8
-        WHEN 'Sep' THEN 9
-        WHEN 'Oct' THEN 10
-        WHEN 'Nov' THEN 11
-        WHEN 'Dec' THEN 12
-        ELSE 13
-    END AS Month_Number,
-
-    -- Vehicle attributes 
+    -- Vehicle attributes (with COALESCE to handle NULLS)
     year AS Year_Of_Manufacture,
     COALESCE(make, 'Unknown') AS make,
     COALESCE(model, 'Unknown') AS model,
@@ -293,11 +246,9 @@ SELECT
     COALESCE(color, 'Unknown') AS color,
     COALESCE(interior, 'Unknown') AS interior,
     
-    -- Derived metrics
-    (CAST(SUBSTR(saledate, 12, 4) AS INT) - year) AS vehicle_age,
-    odometer,
+    COUNT(*) AS total_sales,
 
-    -- Price category (per row level, then aggregated)
+    -- Price category
     CASE 
         WHEN sellingprice BETWEEN 1 AND 76666 THEN 'Budget'
         WHEN sellingprice BETWEEN 76667 AND 153333 THEN 'Mid_range'
@@ -305,16 +256,13 @@ SELECT
         ELSE 'Premium'
     END AS price_category,
 
-    -- TOTALS 
-    COUNT(*) AS total_sales,
     SUM(sellingprice) AS total_revenue,
-    SUM(odometer) AS total_mileage,
     SUM(sellingprice - mmr) AS total_profit_dollars,
     
-    -- Profit margin percentage (total basis, not averaged)
+    -- Profit margin percentage
     (SUM(sellingprice - mmr) / NULLIF(SUM(sellingprice), 0)) * 100 AS profit_margin_pct,
 
-    -- Performance tier based on TOTAL margin
+    -- Performance tier
     CASE 
         WHEN (SUM(sellingprice - mmr) / NULLIF(SUM(sellingprice), 0)) * 100 >= 20 THEN 'High Margin'
         WHEN (SUM(sellingprice - mmr) / NULLIF(SUM(sellingprice), 0)) * 100 >= 10 THEN 'Medium Margin'
@@ -322,46 +270,20 @@ SELECT
         ELSE 'Negative Margin'
     END AS margin_tier
 
-FROM workspace.cars.CARSALES
+FROM `workspace`.`cars`.`CARSALES`
 
 WHERE sellingprice > 0
-  AND year IS NOT NULL
-  AND mmr > 0
   AND sellingprice IS NOT NULL
+  AND mmr > 0
   AND mmr IS NOT NULL
+  AND year IS NOT NULL
 
 GROUP BY 
+    -- Time dimensions
     CAST(SUBSTR(saledate, 12, 4) AS INT),
-    CASE SUBSTR(saledate, 5, 3)
-        WHEN 'Jan' THEN 'January'
-        WHEN 'Feb' THEN 'February'
-        WHEN 'Mar' THEN 'March'
-        WHEN 'Apr' THEN 'April'
-        WHEN 'May' THEN 'May'
-        WHEN 'Jun' THEN 'June'
-        WHEN 'Jul' THEN 'July'
-        WHEN 'Aug' THEN 'August'
-        WHEN 'Sep' THEN 'September'
-        WHEN 'Oct' THEN 'October'
-        WHEN 'Nov' THEN 'November'
-        WHEN 'Dec' THEN 'December'
-        ELSE 'Unknown'
-    END,
-    CASE SUBSTR(saledate, 5, 3)
-        WHEN 'Jan' THEN 1
-        WHEN 'Feb' THEN 2
-        WHEN 'Mar' THEN 3
-        WHEN 'Apr' THEN 4
-        WHEN 'May' THEN 5
-        WHEN 'Jun' THEN 6
-        WHEN 'Jul' THEN 7
-        WHEN 'Aug' THEN 8
-        WHEN 'Sep' THEN 9
-        WHEN 'Oct' THEN 10
-        WHEN 'Nov' THEN 11
-        WHEN 'Dec' THEN 12
-        ELSE 13
-    END,
+    SUBSTR(saledate, 5, 3),
+       
+    -- Vehicle attributes
     year,
     COALESCE(make, 'Unknown'),
     COALESCE(model, 'Unknown'),
@@ -371,8 +293,8 @@ GROUP BY
     COALESCE(state, 'Unknown'),
     COALESCE(color, 'Unknown'),
     COALESCE(interior, 'Unknown'),
-    (CAST(SUBSTR(saledate, 12, 4) AS INT) - year),
-    odometer,
+
+    -- REQUIRED because it's in SELECT
     CASE 
         WHEN sellingprice BETWEEN 1 AND 76666 THEN 'Budget'
         WHEN sellingprice BETWEEN 76667 AND 153333 THEN 'Mid_range'
@@ -382,5 +304,4 @@ GROUP BY
 
 ORDER BY 
     Sale_Year DESC,
-    Month_Number,
-    total_sales DESC;
+    Sale_Month;
