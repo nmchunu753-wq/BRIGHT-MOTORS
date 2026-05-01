@@ -50,7 +50,7 @@ The data processing phase was handled within **Databricks** using SQL to transfo
 *   `car_sales_queries.sql: ` https://github.com/nmchunu753-wq/BRIGHT-MOTORS/blob/main/BRIGHTMOTORS.sql
 *    `Miro Flowchart`: The image is unclear, for clear viewing open link: https://miro.com/app/board/uXjVHaRURUE=/?moveToWidget=3458764670010099810&cot=14
 *    `Gantt time plan`:https://github.com/nmchunu753-wq/BRIGHT-MOTORS/blob/main/Blue%20Aesthetic%20Professional%20Gantt%20Graph.png
-*    `Excel Analysis File - Pivots & Graphs:` 
+*    `Excel Analysis File - Pivots & Graphs:` https://github.com/nmchunu753-wq/BRIGHT-MOTORS/blob/main/PIVOTS%20AND%20GRAPHS.xlsx
 *   `BrightMotors_Presentation.pdf`
 *   `Dashboards`:
 
